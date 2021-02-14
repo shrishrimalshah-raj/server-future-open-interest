@@ -41,7 +41,7 @@ const FutureOpenInterestSchema = new Schema({
   "symbol": { type: String, required: false },
   "pcr-oi": { type: Number, required: false },
    createdAt: { type: Date, required: false },
-   "broadcasted-at": { type: Date, required: false },
+   "broadcasted-at": { type: String, required: false },
 });
 
 const FutureOpenInterestModel = mongoose.model(

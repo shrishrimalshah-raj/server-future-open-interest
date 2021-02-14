@@ -205,7 +205,7 @@ class NseController {
         }
       );
 
-      const expiryDate = "29-Oct-2020";
+      const expiryDate = "19-Nov-2020";
 
       const formattedData = result.data.data.filter((item) => {
         if (item.expiryDate === expiryDate) {
@@ -314,27 +314,38 @@ class NseController {
         "https://www.bloombergquint.com/feapi/markets/options/open-interest?type=break-up&expiry=current&limit=200"
       );
 
-      console.log("result **************", result);
+      // console.log("result **************", result.data);
+      // console.log("result **************", result.data[" "]);
 
-      // const isDupicate = await FutureOpenInterestModel.result({
-      //   ["broadcasted-at"]: result.data["broadcasted-at"],
-      // });
+      const broadcastedAt = result.data["broadcasted-at"];
+      // console.log("broadcastedAt **************", result.data["broadcasted-at"]);
 
-      // console.log("isDupicate **************", isDupicate);
-      // if (isDupicate) {
-      //   return res.status(201).json({ message: "Duplicate record found", isDupicate });
-      // }
+
+
+      // return res.status(200).json({ message: "Data seeded successfully", data:result.data });
+
+      const isDupicate = await FutureOpenInterestModel.findOne({
+        ["broadcasted-at"]: broadcastedAt,
+      });
+
+      console.log("isDupicate **************", isDupicate);
+      if (isDupicate) {
+        return res.status(201).json({ message: "Duplicate record found", isDupicate });
+      }
+
+      // let d = new Date("2020-10-29T04:01Z")
 
       const newFormattedData = result.data["open-interest"].map((record) => {
         const pcrOI = (
           record["put-open-interest"] / record["call-open-interest"]
         ).toFixed(2);
-
+        
+        // new Date(2020, 10, 11)
         return {
           ...record,
           ["pcr-oi"]: Number(pcrOI) || 0,
           createdAt: new Date(),
-          ["broadcasted-at"]: result["broadcasted-at"],
+          ["broadcasted-at"]: broadcastedAt,
         };
       });
 
@@ -466,10 +477,10 @@ class NseController {
   }
 
   async getFutureStockList(req, res) {
-    // new Date(2020, 9, 16)
-    var start = new Date(2020, 9, 16);
+    // new Date(2020, 10, 9)
+    var start = new Date();
     start.setHours(0, 0, 0, 0);
-    var end = new Date(2020, 9, 16);
+    var end = new Date();
     end.setHours(23, 59, 59, 999);
 
     try {
@@ -497,7 +508,7 @@ class NseController {
         console.log("********** pcrMoreThan called *************");
         const result = await FutureOpenInterestModel.find({
           ["pcr-oi"]: { $ne: 0 },
-          ["pcr-oi"]: { $gt: 1.2 },
+          ["pcr-oi"]: { $gt: 1 },
           createdAt: { $gte: start.toISOString(), $lt: end.toISOString() },
         }).sort({ ["pcr-oi"]: -1 });
 

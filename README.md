@@ -21,3 +21,8 @@ mongorestore /home/raj/server-future-open-interest/backup/DataAnalysis
 
 
 DataAnalysis
+
+
+
+
+sudo mongorestore --port=27018 /home/raj/Desktop/future-open-interest/server-future-open-interest/backup/nse_futures_bank_nifty/
